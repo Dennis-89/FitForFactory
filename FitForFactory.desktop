@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name[en_US]=FitForFactory
+Exec=~/.local/bin/fitforfactory/.venv/bin/python ~/.local/bin/fitforfactory/fitforfactory.py
+Terminal=false
+Icon[en_US]=~/.local/bin/fitforfactory/header.PNG
+Type=Application
