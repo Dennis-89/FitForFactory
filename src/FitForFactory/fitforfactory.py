@@ -112,17 +112,7 @@ class FitForFactory(QWidget):
         super().__init__(parent)
         self.ui = Ui_FitForFactory()
         self.ui.setupUi(self)
-        self.chart = QChart()
-        self.chart.setAnimationOptions(QChart.AllAnimations)
-        self.chart_view = QChartView(self.chart)
-        self.chart_view.setRenderHint(QPainter.Antialiasing)
-        self.main_layout = QHBoxLayout()
-        size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        size.setHorizontalStretch(4)
-        self.chart_view.setSizePolicy(size)
-        self.main_layout.addWidget(self.chart_view)
-        self.ui.tabWidget.widget(2).setLayout(self.main_layout)
-
+        self.create_chart()
         validator = QRegularExpressionValidator(QRegularExpression(r"^[a-zA-Z\s]*$/"))
         self.ui.user_name.setValidator(validator)
         self.reader_thread = QThread()
@@ -144,6 +134,18 @@ class FitForFactory(QWidget):
         self.ui.weight_button.clicked.connect(self.weight_process)
         self.update_chart()
 
+    def create_chart(self):
+        self.chart = QChart()
+        self.chart.setAnimationOptions(QChart.AllAnimations)
+        self.chart_view = QChartView(self.chart)
+        self.chart_view.setRenderHint(QPainter.Antialiasing)
+        self.main_layout = QHBoxLayout()
+        size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        size.setHorizontalStretch(10)
+        self.chart_view.setSizePolicy(size)
+        self.main_layout.addWidget(self.chart_view)
+        self.ui.tabWidget.widget(2).setLayout(self.main_layout)
+
     def register_process(self):
         user_name = self.ui.user_name.text()
         members = load_members(MEMBERS_FILE)
@@ -151,7 +153,9 @@ class FitForFactory(QWidget):
         if self.user_id is None:
             return
         if is_member(members["members"], self.user_id):
-            show_user_register_error(members["members"][self.user_id])
+            show_user_register_error(
+                list(map(lambda x: x.get(self.user_id, ""), members["members"]))[0]
+            )
             self.ui.user_info.setText("In der User-Lounge kannst du dich anmelden")
         else:
             register_member(MEMBERS_FILE, members, user_name, self.user_id)
@@ -181,8 +185,8 @@ class FitForFactory(QWidget):
                 self.ui.weight_button.setEnabled(True)
 
     def update_chart(self):
-        members = load_members(MEMBERS_FILE)
-        for member in members["members"]:
+        self.chart.removeAllSeries()
+        for member in load_members(MEMBERS_FILE)["members"]:
             id_, name = [(id_, name) for id_, name in member.items()][0]
             series = QLineSeries()
             series.setName(name)
@@ -201,7 +205,7 @@ class FitForFactory(QWidget):
         self.chart.addAxis(axis_x, Qt.AlignBottom)
         series.attachAxis(axis_x)
         axis_y = QValueAxis()
-        axis_y.setTickCount(20)
+        axis_y.setTickCount(10)
         axis_y.setLabelFormat("%.2f")
         axis_y.setTitleText("Gewicht [kg]")
         self.chart.addAxis(axis_y, Qt.AlignLeft)
@@ -226,6 +230,7 @@ class FitForFactory(QWidget):
         save_weight(WEIGHT_FILE, self.user_id, self.scale.weight)
         self.ui.weight_button.setEnabled(False)
         self.update_weight_table(get_user_weights(WEIGHT_FILE, self.user_id))
+        self.create_chart()
         self.update_chart()
 
     def get_chip_id(self):
