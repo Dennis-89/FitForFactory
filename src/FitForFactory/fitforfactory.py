@@ -154,7 +154,7 @@ class FitForFactory(QWidget):
             return
         if is_member(members["members"], self.user_id):
             show_user_register_error(
-                list(map(lambda x: x.get(self.user_id, ""), members["members"]))[0]
+                list(map(lambda x: x.get(self.user_id, ""), members['members']))[0]
             )
             self.ui.user_info.setText("In der User-Lounge kannst du dich anmelden")
         else:
