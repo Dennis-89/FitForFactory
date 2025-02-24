@@ -9,11 +9,10 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-apt update ||
-apt install libglib2.0-dev || dnf install glib2-devel
+apt update && install libglib2.0-dev || dnf install glib2-devel
 
 mkdir -p /usr/local/share/applications/fitforfactory/.venv
-python -m venv /usr/local/share/applications/fitforfactory/.venv
+python3 -m venv /usr/local/share/applications/fitforfactory/.venv
 
 git clone https://github.com/Dennis-89/BodyCompositionScale2.git /usr/local/share/applications/fitforfactory/src/
 /usr/local/share/applications/fitforfactory/.venv/bin/pip install /usr/local/share/applications/fitforfactory/src
