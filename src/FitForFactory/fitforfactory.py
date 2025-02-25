@@ -186,8 +186,9 @@ class FitForFactory(QWidget):
 
     def update_chart(self):
         self.chart.removeAllSeries()
+        weights = []
         for member in load_members(MEMBERS_FILE)["members"]:
-            id_, name = [(id_, name) for id_, name in member.items()][0]
+            id_, name = list(member.items())[0]
             series = QLineSeries()
             series.setName(name)
             for timestamp, weight in get_user_weights(WEIGHT_FILE, id_):
@@ -197,6 +198,7 @@ class FitForFactory(QWidget):
                     .toMSecsSinceEpoch()
                 )
                 series.append(timestamp, float(weight))
+                weights.append(float(weight))
             self.chart.addSeries(series)
         axis_x = QDateTimeAxis()
         axis_x.setTickCount(10)
@@ -205,6 +207,8 @@ class FitForFactory(QWidget):
         self.chart.addAxis(axis_x, Qt.AlignBottom)
         series.attachAxis(axis_x)
         axis_y = QValueAxis()
+        axis_y.setMax(max(weights))
+        axis_y.setMin(min(weights))
         axis_y.setTickCount(10)
         axis_y.setLabelFormat("%.2f")
         axis_y.setTitleText("Gewicht [kg]")
