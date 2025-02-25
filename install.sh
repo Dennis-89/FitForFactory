@@ -8,8 +8,10 @@ if [ "$EUID" -ne 0 ]
   then echo -e "${RED}Datei als root ausführen!${NC}"
   exit
 fi
-
-apt update && install libglib2.0-dev || dnf install glib2-devel
+try
+  (apt update && install libglib2.0-dev)
+catch
+  (dnf install glib2-devel)
 
 mkdir -p /usr/local/share/applications/fitforfactory/.venv
 python3 -m venv /usr/local/share/applications/fitforfactory/.venv
