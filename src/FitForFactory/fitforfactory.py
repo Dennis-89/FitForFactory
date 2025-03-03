@@ -169,7 +169,7 @@ class FitForFactory(QWidget):
         members = load_members(MEMBERS_FILE)
         if is_member(members["members"], self.user_id):
             self.ui.hello_user.setText(
-                f"Wilkommen {list(map(lambda x: x.get(self.user_id, ''), members["members"]))[0]}, viel Spass!"
+                f"Wilkommen {list(map(lambda x: x.get(self.user_id, ''), members['members']))[0]}, viel Spass!"
             )
             self.ui.login_button.setEnabled(False)
             self.ui.logout_button.setEnabled(True)
